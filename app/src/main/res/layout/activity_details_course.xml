@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_yellow"
+    tools:context=".CompetenceActivity">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_header"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginStart="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dev Web"
+            android:textSize="28sp"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Content Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/id_header">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="30dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginHorizontal="16dp">
+
+                <!-- Instructor Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_teacher"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Instructor"
+                        android:layout_marginEnd="20dp"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BELKASSMI MOHAMMED"
+                        android:textColor="@color/dark_yellow"
+                        android:textSize="15sp"/>
+                </LinearLayout>
+
+                <!-- Code Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_product_development"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Code"
+                        android:layout_marginEnd="60dp"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="M15Q555"
+                        android:textColor="@color/dark_yellow"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <!-- Level Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_volume_control"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Level"
+                        android:layout_marginEnd="60dp"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GI4"
+                        android:textColor="@color/dark_yellow"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <!-- Semester Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_calendar"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Semester"
+                        android:layout_marginEnd="25dp"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S1"
+                        android:textColor="@color/dark_yellow"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <!-- Competences Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center">
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_competency"
+                        android:layout_marginEnd="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Competences"
+                        android:layout_marginEnd="20dp"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <!-- GridView for Competences -->
+                <GridView
+                    android:id="@+id/gridCompetencesCourse"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:numColumns="4"
+                    android:background="@drawable/background_card_white"
+                    android:horizontalSpacing="0dp"
+                    android:verticalSpacing="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="14dp" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Course Ressourse"
+                    android:background="@drawable/background_button_blue"
+                    android:textSize="14dp"
+                    android:textColor="@color/white"
+                    android:paddingHorizontal="32dp"
+                    android:paddingVertical="12dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="18dp"
+                    android:fontFamily="@font/inter_28pt_extrabold"/>
+                <GridView
+                    android:id="@+id/gridInfosCompetencesCourse"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:numColumns="2"
+                    android:horizontalSpacing="20dp"
+                    android:verticalSpacing="10dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:gravity="center"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="14dp" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

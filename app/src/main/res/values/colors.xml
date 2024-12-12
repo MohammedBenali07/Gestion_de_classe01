@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_yellow">#fff4c7</color>
+    <color name="dark_yellow">#C5A00E</color>
+    <color name="blue">#006FFD</color>
+    <color name="semiDark_blue">#3A94E7</color>
+    <color name="light_blue">#D0EFFF</color>
+    <color name="stroke_inputs">#C5C6CC</color>
+    <color name="hint_inputs">#8F9098</color>
+    <color name="grey">#71727A</color>
+    <color name="red">#ff0000</color>
+</resources>

@@ -1,0 +1,100 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_yellow"
+    tools:context=".CompetenceActivity">
+
+    <!-- Header Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_header"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginTop="35dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_courses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Courses"
+            android:textSize="28dp"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textColor="@color/black"
+            android:layout_marginTop="35dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/id_spinners"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginHorizontal="36dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/text_courses">
+
+            <Spinner
+                android:id="@+id/level_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:spinnerMode="dropdown"
+                android:layout_weight="3"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/background_spinners"
+                android:entries="@array/level_spinner" />
+
+            <Spinner
+                android:id="@+id/semestre_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:spinnerMode="dropdown"
+                android:layout_weight="3"
+                android:background="@drawable/background_spinners"
+                android:entries="@array/semestre_spinner" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/input_search"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/background_inputs"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="14dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="36dp"
+            android:textStyle="bold"
+            android:hint="Searching....."
+            android:drawableEnd="@drawable/ic_search"
+            android:drawablePadding="10dp"
+            android:textColorHint="@color/hint_inputs"
+            app:layout_constraintTop_toBottomOf="@id/id_spinners" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RecyclerView Section -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCourses"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/id_header"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="22dp"
+    android:background="@drawable/background_card_white"
+    android:elevation="8dp">
+
+    <!-- Titre du popup -->
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="General Classement"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="@font/inter_28pt_extrabold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"
+        android:textColor="@color/black" />
+    <LinearLayout
+        android:id="@+id/table_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Rang de l'étudiant -->
+        <TextView
+            android:id="@+id/student_rank"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="#"
+            android:textSize="16sp"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:gravity="center"
+            android:textColor="@color/dark_yellow" />
+
+        <!-- Nom de l'étudiant -->
+        <TextView
+            android:id="@+id/student_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Name"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/dark_yellow" />
+
+        <!-- Score de l'étudiant -->
+        <TextView
+            android:id="@+id/student_score"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Score"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/dark_yellow" />
+
+    </LinearLayout>
+
+    <!-- RecyclerView pour afficher tous les classements -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/popup_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingTop="0dp"
+        android:paddingBottom="10dp"
+        android:scrollbars="vertical" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/popup_button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cencel"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/dark_yellow"
+        android:layout_gravity="end"
+        android:background="@drawable/background_button_white"/>
+</LinearLayout>

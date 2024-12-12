@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#F8F8F8" /> <!-- White background -->
+            <corners android:radius="8dp" /> <!-- Rounded corners (optional) -->
+            <padding android:left="3dp" android:top="0dp"
+                android:right="3dp" android:bottom="3dp" /> <!-- Padding for shadow -->
+        </shape>
+    </item>
+    <item android:right="2dp" android:left="2dp" android:bottom="2dp"> <!-- Offset for shadow -->
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- Gray shadow -->
+            <corners android:radius="8dp" /> <!-- Rounded corners (optional) -->
+        </shape>
+    </item>
+</layer-list>

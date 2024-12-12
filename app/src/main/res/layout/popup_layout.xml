@@ -1,0 +1,116 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:layout_centerInParent="true">
+
+        <!-- Titre -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Session Details"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp" />
+
+        <!-- Nom & Prénom -->
+        <TextView
+            android:id="@+id/tv_nomprenom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="10dp"
+            android:text="Mohammed Benali"
+            android:textColorHint="@color/grey"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginVertical="8dp"
+            android:background="@drawable/background_inputs" />
+
+        <!-- Matière -->
+        <TextView
+            android:id="@+id/tv_matiere"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="10dp"
+            android:text="Java"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginVertical="8dp"
+            android:background="@drawable/background_inputs" />
+
+        <!-- Date -->
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="10dp"
+            android:text="12/11/2024"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginVertical="8dp"
+            android:background="@drawable/background_inputs" />
+
+        <!-- Type -->
+        <TextView
+            android:id="@+id/tv_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="10dp"
+            android:text="Type"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_marginVertical="8dp"
+            android:background="@drawable/background_inputs" />
+
+        <!-- Boutons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <!-- Bouton Annuler -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Annuler"
+                android:gravity="center"
+                android:textColor="@color/dark_yellow"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:padding="8dp"
+                android:background="@drawable/background_button_white"
+                android:layout_marginEnd="15dp" />
+
+            <!-- Bouton Justification -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_justif"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Justifir"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:padding="8dp"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/background_button_yellow" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

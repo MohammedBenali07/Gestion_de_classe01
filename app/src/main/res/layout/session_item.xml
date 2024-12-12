@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@android:color/white"
+    android:gravity="center_vertical"
+    android:elevation="2dp">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/session_text"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:background="@drawable/background_image_profile"
+        android:layout_marginEnd="8dp" />
+    <!-- Texte de la session -->
+    <TextView
+        android:id="@+id/session_numer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Session"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Texte de présence -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/item"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="Presence"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:fontFamily="@font/inter_28pt_semibold"
+        android:background="@color/dark_yellow" />
+
+</LinearLayout>

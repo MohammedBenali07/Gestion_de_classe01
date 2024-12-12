@@ -1,0 +1,62 @@
+<!-- res/layout/activity_main.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_header"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginTop="35dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_courses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Discover Tutorials"
+            android:textSize="28dp"
+            android:fontFamily="@font/inter_28pt_extrabold"
+            android:textColor="@color/black"
+            android:layout_marginTop="35dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <EditText
+            android:id="@+id/search_formation"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/background_inputs"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="14dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="36dp"
+            android:textStyle="bold"
+            android:hint="Searching....."
+            android:drawableEnd="@drawable/ic_search"
+            android:drawablePadding="10dp"
+            android:textColorHint="@color/hint_inputs"
+            app:layout_constraintTop_toBottomOf="@id/text_courses" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        tools:listitem="@layout/item_course"
+        app:layout_constraintTop_toBottomOf="@id/id_header"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
