@@ -1,5 +1,6 @@
 package com.example.gestiondeclasse;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,10 +8,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import java.util.Calendar;
+
 
 public class Fragment1 extends Fragment {
 
@@ -59,6 +64,33 @@ public class Fragment1 extends Fragment {
         editEmail.setText(tvEmail.getText().toString());
         editBirthday.setText(tvBirthday.getText().toString());
         editAddress.setText(tvAddress.getText().toString());
+
+        // Set up a DatePickerDialog for the birthday field
+        editBirthday.setOnClickListener(v -> {
+            // Get the current date to initialize the DatePicker
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            // Create the DatePickerDialog with the custom theme
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    getContext(),
+                    R.style.CustomDatePicker,  // Apply custom style
+                    (view1, selectedYear, selectedMonth, selectedDay) -> {
+                        // Format the selected date and display it in the EditText
+                        String formattedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                        editBirthday.setText(formattedDate);
+                    },
+                    year, month, day
+            );
+
+            // Optional: Restrict to past dates (e.g., for a birthday field)
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
+            // Show the DatePickerDialog
+            datePickerDialog.show();
+        });
 
         builder.setView(dialogView);
 

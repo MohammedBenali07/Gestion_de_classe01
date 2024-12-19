@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class FormationActivity extends AppCompatActivity {
     private FormationAdapter formationAdapter;
     private ArrayList<Course> courseList = new ArrayList<>();
     private ArrayList<Course> filteredCourseList = new ArrayList<>();
+    private ProgressBar progressBar; // Déclaration du ProgressBar
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,9 @@ public class FormationActivity extends AppCompatActivity {
         formationAdapter = new FormationAdapter(filteredCourseList);
         recyclerView.setAdapter(formationAdapter);
 
+        // Initialize ProgressBar
+        progressBar = findViewById(R.id.progressBar);  // Trouver la référence au ProgressBar
+
         // Fetch data from multiple Coursera API URLs
         fetchCourseData();
 
@@ -56,7 +61,7 @@ public class FormationActivity extends AppCompatActivity {
         });
 
         // Set up search functionality
-        EditText searchInput = findViewById(R.id.search_formation); // Assurez-vous d'avoir un EditText avec l'id 'searchInput' dans votre layout
+        EditText searchInput = findViewById(R.id.search_formation);
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
@@ -75,9 +80,11 @@ public class FormationActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
+        // Afficher le ProgressBar avant de commencer la récupération des données
+        progressBar.setVisibility(View.VISIBLE);
+
         executor.execute(() -> {
             try {
-                // URLs de l'API Coursera
                 String[] urls = {
                         "https://api.coursera.org/api/courses.v1?q=search&query=computer%20science&fields=name,slug,photoUrl,partnerLogo",
                         "https://api.coursera.org/api/courses.v1?q=search&query=data%20science&fields=name,slug,photoUrl,partnerLogo",
@@ -94,7 +101,7 @@ public class FormationActivity extends AppCompatActivity {
 
                     int responseCode = connection.getResponseCode();
 
-                    if (responseCode == 200) { // Si la requête réussit
+                    if (responseCode == 200) {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                         StringBuilder response = new StringBuilder();
                         String line;
@@ -115,12 +122,9 @@ public class FormationActivity extends AppCompatActivity {
                             String link = "https://www.coursera.org/learn/" + course.getString("slug");
                             String imageUrl = course.optString("photoUrl", "");
 
-                            // Ajout à la liste des cours
                             Course newCourse = new Course(title, link, imageUrl);
                             courseList.add(newCourse);
                         }
-
-                    } else {
                     }
                 }
 
@@ -129,15 +133,22 @@ public class FormationActivity extends AppCompatActivity {
                     filteredCourseList.addAll(courseList);  // Afficher tous les cours au départ
                     formationAdapter.notifyDataSetChanged();
                     Toast.makeText(FormationActivity.this, "Cours récupérés avec succès!", Toast.LENGTH_SHORT).show();
+
+                    // Cacher le ProgressBar après la récupération des données
+                    progressBar.setVisibility(View.GONE);
                 });
 
             } catch (Exception e) {
-                handler.post(() -> Toast.makeText(FormationActivity.this, "Erreur lors de la récupération des données.", Toast.LENGTH_SHORT).show());
+                handler.post(() -> {
+                    Toast.makeText(FormationActivity.this, "Erreur lors de la récupération des données.", Toast.LENGTH_SHORT).show();
+
+                    // Cacher le ProgressBar en cas d'erreur
+                    progressBar.setVisibility(View.GONE);
+                });
             }
         });
     }
 
-    // Méthode pour filtrer les cours en fonction du texte saisi
     private void filterCourses(String query) {
         filteredCourseList.clear();
         if (query.isEmpty()) {

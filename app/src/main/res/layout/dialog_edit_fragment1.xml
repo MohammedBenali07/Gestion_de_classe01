@@ -38,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:inputType="datetime"
+        android:focusable="false"
         android:background="@drawable/background_inputs"
         android:paddingVertical="14dp"
         android:paddingHorizontal="16dp"

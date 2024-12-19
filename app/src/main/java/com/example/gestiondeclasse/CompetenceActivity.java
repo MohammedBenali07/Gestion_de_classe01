@@ -2,7 +2,10 @@ package com.example.gestiondeclasse;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -12,129 +15,159 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-public class CompetenceActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+import java.util.ArrayList;
+import java.util.List;
 
+public class CompetenceActivity extends AppCompatActivity {
+
+    // Données des compétences (ajusté pour utiliser progress au lieu des images)
     private String[] skillNames = {"Java", "Kotlin", "XML", "Android", "SQLite", "UI Design"};
-    private int[] skillLogos = {
-            R.drawable.java,
-            R.drawable.java,
-            R.drawable.java,
-            R.drawable.java,
-            R.drawable.java,
-            R.drawable.java
-    };
-    private int[] skillProgress = {90, 80, 70, 85, 75, 95}; // Progression des compétences
+    private int[] skillProgress = {80, 70, 50, 90, 60, 75}; // Progrès des compétences (0 à 100)
 
+    private ArrayList<Competence> competenceList = new ArrayList<>();
     private CompetenceAdapter adapter;
+
+    private static final int REQUEST_CODE_PERMISSION = 1;
+    private static final int PICK_IMAGE_REQUEST = 2;
+
+    private ArrayList<Uri> selectedImageUris = new ArrayList<>(); // Liste des URI sélectionnés
+    private ImageView dialogImagePreview; // Aperçu de l'image dans la boîte de dialogue
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_competence);
 
-        // Configurer l'adaptateur pour le GridView
+        // Vérifier les permissions pour accéder aux fichiers
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE_PERMISSION);
+        }
+
+        // Initialiser l'adaptateur et configurer le GridView
         GridView gridView = findViewById(R.id.gridCompetences);
-        adapter = new CompetenceAdapter(this, skillNames, skillLogos, skillProgress);
+        adapter = new CompetenceAdapter(this, competenceList);
         gridView.setAdapter(adapter);
 
-        // Bouton pour ajouter une compétence
+        // Charger les compétences par défaut
+        loadDefaultCompetences();
+
+        // Ajouter une compétence
         ImageView addCompetenceButton = findViewById(R.id.ajouter_competence);
         addCompetenceButton.setOnClickListener(v -> showAddCompetenceDialog());
 
-        // Configuration du bouton retour
-        ImageView iconBack = findViewById(R.id.icon_back); // Déplacement ici dans onCreate
-        iconBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Rediriger vers DashboardActivity
-                Intent intent = new Intent(CompetenceActivity.this, DashboardActivity.class);
-                startActivity(intent);
-            }
+        // Bouton de retour
+        ImageView iconBack = findViewById(R.id.icon_back);
+        iconBack.setOnClickListener(v -> {
+            Intent intent = new Intent(CompetenceActivity.this, DashboardActivity.class);
+            startActivity(intent);
         });
     }
 
-    // Méthode pour afficher le dialog
+    // Charger les compétences par défaut
+    private void loadDefaultCompetences() {
+        for (int i = 0; i < skillNames.length; i++) {
+            Competence competence = new Competence(skillNames[i], skillProgress[i]);
+            competenceList.add(competence);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     private void showAddCompetenceDialog() {
-        Dialog dialog = new Dialog(this); // Optionnel : Appliquer un style
+        Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_ajouter_competence);
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.background_dialog);
 
-        // Récupérer les vues du dialog
         EditText inputName = dialog.findViewById(R.id.input_name);
         Spinner careerSpinner = dialog.findViewById(R.id.career_spinner);
-        Spinner coursesSpinner = dialog.findViewById(R.id.courses_spinner);
         Button btnSave = dialog.findViewById(R.id.btn_save);
         Button btnCancel = dialog.findViewById(R.id.btn_cancel);
+        dialogImagePreview = dialog.findViewById(R.id.competenceLogo);
 
-        // Vérifiez que les Spinners ne sont pas null avant de les utiliser
-        if (careerSpinner != null && coursesSpinner != null) {
-            // Configurer les Spinners dans le dialog
-            SpinnerUtils.setupSpinner(
-                    this,
-                    careerSpinner,
-                    R.array.career_spinner,
-                    R.layout.spinners_item,
-                    null
-            );
+        // Configurez le bouton pour choisir l'image (ici, cette fonctionnalité n'est plus nécessaire pour cette version)
+        dialog.findViewById(R.id.btn_select_image).setOnClickListener(v -> pickImage());
 
-            SpinnerUtils.setupSpinner(
-                    this,
-                    coursesSpinner,
-                    R.array.courses_spinner,
-                    R.layout.spinners_item,
-                    null
-            );
-        } else {
-            Toast.makeText(this, "Erreur d'initialisation des spinners", Toast.LENGTH_SHORT).show();
-            return; // Ne pas poursuivre si un spinner est null
-        }
+        // Configurer le spinner de carrière
+        SpinnerUtils.setupSpinner(this, careerSpinner, R.array.career_spinner, R.layout.spinners_item, null);
 
-        // Action pour le bouton "Enregistrer"
+        // Sauvegarder la compétence
         btnSave.setOnClickListener(v -> {
             String name = inputName.getText().toString().trim();
-            String career = careerSpinner.getSelectedItem().toString();
-            String course = coursesSpinner.getSelectedItem().toString();
-
             if (name.isEmpty()) {
                 Toast.makeText(this, "Le nom de la compétence est requis", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Ajouter la nouvelle compétence
-            addNewCompetence(name, career, course);
-
-            // Fermer le dialog
+            // Nous avons remplacé la logique d'image par un attribut de progrès
+            int defaultProgress = 0;  // On peut laisser la compétence avec une progression à 0 par défaut
+            addNewCompetence(name, defaultProgress); // Ajouter la compétence
             dialog.dismiss();
         });
 
-        // Action pour le bouton "Annuler"
+        // Annuler l'ajout
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
 
-    // Ajouter une compétence
-    private void addNewCompetence(String name, String career, String course) {
-        // Exemple pour ajouter une compétence au GridView (vous pouvez adapter selon votre logique)
-        Toast.makeText(this, "Compétence ajoutée : " + name + " - Carrière : " + career + " - Cours : " + course, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // Ceci gère la sélection dans le Spinner du dialog
-        if (parent.getId() == R.id.career_spinner) {
-            String selectedCareer = parent.getItemAtPosition(position).toString();
-            Toast.makeText(this, "Carrière sélectionnée : " + selectedCareer, Toast.LENGTH_SHORT).show();
-        } else if (parent.getId() == R.id.courses_spinner) {
-            String selectedCourse = parent.getItemAtPosition(position).toString();
-            Toast.makeText(this, "Cours sélectionné : " + selectedCourse, Toast.LENGTH_SHORT).show();
+    private void addNewCompetence(String name, int progress) {
+        // Vérifier si la compétence existe déjà
+        for (Competence competence : competenceList) {
+            if (competence.getName().equalsIgnoreCase(name)) {
+                Toast.makeText(this, "Cette compétence existe déjà.", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
+
+        // Ajouter une compétence
+        Competence newCompetence = new Competence(name, progress);
+        competenceList.add(newCompetence);
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this, "Compétence ajoutée avec succès : " + name, Toast.LENGTH_SHORT).show();
+    }
+
+    private void pickImage() {
+        // Intent pour sélectionner une ou plusieurs images depuis la galerie (cela peut être omis, car nous n'utilisons plus d'images dans le modèle)
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); // Permet la sélection multiple d'images
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Aucune action
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            selectedImageUris.clear(); // Vide les précédents URI pour éviter la duplication
+
+            if (data.getClipData() != null) {
+                // Sélection multiple d'images
+                int count = data.getClipData().getItemCount();
+                for (int i = 0; i < count; i++) {
+                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                    selectedImageUris.add(imageUri);
+                }
+                Toast.makeText(this, selectedImageUris.size() + " images sélectionnées", Toast.LENGTH_SHORT).show();
+            } else if (data.getData() != null) {
+                // Sélection d'une seule image
+                Uri imageUri = data.getData();
+                selectedImageUris.add(imageUri);
+                Toast.makeText(this, "1 image sélectionnée", Toast.LENGTH_SHORT).show();
+            }
+
+            // Mettre à jour l'aperçu de l'image dans le dialogue (non utilisé pour l'instant)
+            if (!selectedImageUris.isEmpty()) {
+                Uri selectedImageUri = selectedImageUris.get(0);
+                dialogImagePreview.setImageURI(selectedImageUri);
+            }
+        }
     }
 }

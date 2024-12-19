@@ -58,5 +58,18 @@
         android:padding="16dp"
         tools:listitem="@layout/item_course"
         app:layout_constraintTop_toBottomOf="@id/id_header"/>
+    <!-- ProgressBar to show while data is loading -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:indeterminate="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="100dp"
+        android:indeterminateTint="@color/semiDark_blue"
+        app:layout_constraintTop_toBottomOf="@id/id_header"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
