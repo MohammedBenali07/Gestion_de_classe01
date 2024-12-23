@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="300dp"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:background="@drawable/background_card_white">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_check"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirmation"
+        android:textSize="28sp"
+        android:fontFamily="@font/inter_28pt_extrabold"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/dialog_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Votre présence a été enregistrée avec succès !"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/inter_28pt_extrabold"
+        android:textColor="@color/grey" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/dialog_close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/grey"
+        android:background="@drawable/background_button_white"/>
+</LinearLayout>

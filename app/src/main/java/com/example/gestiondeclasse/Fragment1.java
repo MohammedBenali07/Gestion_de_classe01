@@ -16,12 +16,16 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Calendar;
 
-
 public class Fragment1 extends Fragment {
 
     private TextView tvEmail, tvBirthday, tvAddress;
     private EditText editEmail, editBirthday, editAddress;
     private Button btnSaveChanges, btnCancelChanges;
+
+    // Variables to hold the data passed through getExtra
+    private String email;
+    private String birthday;
+    private String address;
 
     @Nullable
     @Override
@@ -29,10 +33,23 @@ public class Fragment1 extends Fragment {
         // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_1, container, false);
 
-        // Initialize the TextViews for displaying information
+        // Get the data passed via arguments
+        if (getArguments() != null) {
+            email = getArguments().getString("userEmail");
+            birthday = getArguments().getString("userBirthday");
+            // Assuming address is passed along as well (if needed)
+            address = getArguments().getString("userAddress", "Address not provided");
+        }
+
+        // Initialize the TextViews for displaying the information
         tvEmail = view.findViewById(R.id.id_email_fragment1);
         tvBirthday = view.findViewById(R.id.id_birthday_fragment1);
         tvAddress = view.findViewById(R.id.id_address_fragment1);
+
+        // Set the TextViews with the obtained data
+        tvEmail.setText(email);
+        tvBirthday.setText(birthday);
+        tvAddress.setText(address);
 
         // Initialize the button for showing the popup
         View editPenIcon = view.findViewById(R.id.edit_pen);
@@ -100,14 +117,15 @@ public class Fragment1 extends Fragment {
         // Action to save the changes
         btnSaveChanges.setOnClickListener(v -> {
             // Get the new values from the fields
-            String email = editEmail.getText().toString();
-            String birthday = editBirthday.getText().toString();
-            String address = editAddress.getText().toString();
+            String newEmail = editEmail.getText().toString();
+            String newBirthday = editBirthday.getText().toString();
+            String newAddress = editAddress.getText().toString();
 
             // Update the TextViews with the new data
-            tvEmail.setText(email);
-            tvBirthday.setText(birthday);
-            tvAddress.setText(address);
+            tvEmail.setText(newEmail);
+            tvBirthday.setText(newBirthday);
+
+            // Optionally, save the changes to a local database or server.
 
             // Close the dialog
             dialog.dismiss();

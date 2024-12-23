@@ -44,10 +44,10 @@
     <!-- Array pour les professuers -->
     <string-array name="Spinner_professeurs">
         <item>To:</item>
-        <item>Mohammed Benali</item>
-        <item>Mohammed Benali</item>
-        <item>Mohammed Benali</item>
-        <item>Mohammed Benali</item>
+        <item>mohammed.benali23@ump.ac.ma</item>
+        <item>mohammed.benali23@gmail.com</item>
+        <item>mohammed.benali23@gmail.com</item>
+        <item>mohammed.benali23@gmail.com</item>
     </string-array>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

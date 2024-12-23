@@ -1,57 +1,40 @@
 package com.example.gestiondeclasse;
-
-import android.net.Uri;
-import java.util.List;
-
 public class Competence {
+    private int id;
     private String name;
     private int progress;
 
-    // Constructeur principal
-    public Competence(String name, int progress) {
+    // Constructeur
+    public Competence(int id, String name, int progress) {
+        this.id = id;
         this.name = name;
         this.progress = progress;
     }
 
-    // Constructeur secondaire (progress par défaut à 0)
-    public Competence(String name) {
-        this(name, 0); // progression par défaut à 0
+    // Getter et Setter pour id
+    public int getId() {
+        return id;
     }
 
-    // Getters
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Getter et Setter pour name
     public String getName() {
         return name;
     }
 
-
-
-    public int getProgress() {
-        return progress;
-    }
-
-    // Setters
     public void setName(String name) {
         this.name = name;
     }
 
-
-
-    public void setProgress(int progress) {
-        // Assurez-vous que la progression reste dans la plage [0, 100]
-        if (progress < 0) {
-            this.progress = 0;
-        } else if (progress > 100) {
-            this.progress = 100;
-        } else {
-            this.progress = progress;
-        }
+    // Getter et Setter pour progress
+    public int getProgress() {
+        return progress;
     }
 
-    @Override
-    public String toString() {
-        return "Competence{" +
-                "name='" + name + '\'' +
-                ", progress=" + progress +
-                '}';
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 }

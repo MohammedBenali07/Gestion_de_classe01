@@ -13,8 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import java.io.File;
-
 public class ContactActivity extends AppCompatActivity {
 
     private Spinner contactSpinner;
@@ -54,6 +52,9 @@ public class ContactActivity extends AppCompatActivity {
                 }
         );
 
+        // Pré-sélectionner une personne par défaut dans le Spinner
+        contactSpinner.setSelection(0); // Change l'index si nécessaire, ici c'est l'index 0 (premier élément)
+
         // Ajouter un écouteur pour le bouton "Add files"
         addFilesButton.setOnClickListener(v -> {
             // Ouvrir le sélecteur de fichiers
@@ -71,9 +72,12 @@ public class ContactActivity extends AppCompatActivity {
             if (subject.isEmpty() || message.isEmpty()) {
                 Toast.makeText(ContactActivity.this, "Please fill in all fields!", Toast.LENGTH_SHORT).show();
             } else {
-                // Créer un Intent pour envoyer un e-mail
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto", "recipient@example.com", null));  // Remplacer "recipient@example.com"
+                // Créer un Intent pour envoyer un e-mail sans choisir de client email
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822"); // Type pour les emails
+
+                // Remplir les champs avec le sujet, message et email de destination
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mohammed07.benali00@gmail.com"});  // Remplacer recipient@example.com par l'email réel
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                 emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 
@@ -82,13 +86,15 @@ public class ContactActivity extends AppCompatActivity {
                     emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                 }
 
+                // Vérifier si il existe des applications pouvant gérer l'email
                 try {
                     startActivity(Intent.createChooser(emailIntent, "Send email via"));
-                } catch (Exception e) {
+                } catch (android.content.ActivityNotFoundException e) {
                     Toast.makeText(ContactActivity.this, "No email clients found.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
         // Configuration du bouton retour
         ImageView iconBack = findViewById(R.id.icon_back); // Déplacement ici dans onCreate
         iconBack.setOnClickListener(new View.OnClickListener() {

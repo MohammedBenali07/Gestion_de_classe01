@@ -29,14 +29,14 @@
         android:layout_marginEnd="8dp" />
 
     <!-- Texte de présence -->
-    <androidx.appcompat.widget.AppCompatButton
+    <TextView
         android:id="@+id/item"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:text="Presence"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="12sp"
-        android:fontFamily="@font/inter_28pt_semibold"
-        android:background="@color/dark_yellow" />
+        android:gravity="center"
+        android:fontFamily="@font/inter_28pt_semibold" />
 
 </LinearLayout>

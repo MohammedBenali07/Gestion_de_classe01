@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,33 +33,33 @@ public class FormationActivity extends AppCompatActivity {
     private FormationAdapter formationAdapter;
     private ArrayList<Course> courseList = new ArrayList<>();
     private ArrayList<Course> filteredCourseList = new ArrayList<>();
-    private ProgressBar progressBar; // Déclaration du ProgressBar
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formation);
 
+        // Initializing views
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        progressBar = findViewById(R.id.progressBar);  // Getting reference to the ProgressBar
 
+        // Set up RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         formationAdapter = new FormationAdapter(filteredCourseList);
         recyclerView.setAdapter(formationAdapter);
 
-        // Initialize ProgressBar
-        progressBar = findViewById(R.id.progressBar);  // Trouver la référence au ProgressBar
-
-        // Fetch data from multiple Coursera API URLs
+        // Fetch courses from the API
         fetchCourseData();
 
-        // Configure back button
+        // Setup Back button functionality
         ImageView iconBack = findViewById(R.id.icon_back);
         iconBack.setOnClickListener(v -> {
             Intent intent = new Intent(FormationActivity.this, DashboardActivity.class);
             startActivity(intent);
         });
 
-        // Set up search functionality
+        // Implement search functionality
         EditText searchInput = findViewById(R.id.search_formation);
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -80,7 +79,7 @@ public class FormationActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
-        // Afficher le ProgressBar avant de commencer la récupération des données
+        // Display ProgressBar while loading data
         progressBar.setVisibility(View.VISIBLE);
 
         executor.execute(() -> {
@@ -91,68 +90,67 @@ public class FormationActivity extends AppCompatActivity {
                         "https://api.coursera.org/api/courses.v1?q=search&query=programming&fields=name,slug,photoUrl"
                 };
 
-                // Pour chaque URL, on effectue la requête
+                // Fetch data from multiple URLs
                 for (String urlString : urls) {
-                    URL url = new URL(urlString);
-
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setRequestProperty("Accept", "application/json");
-
-                    int responseCode = connection.getResponseCode();
-
-                    if (responseCode == 200) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        StringBuilder response = new StringBuilder();
-                        String line;
-
-                        while ((line = reader.readLine()) != null) {
-                            response.append(line);
-                        }
-                        reader.close();
-
-                        // Parse JSON
-                        JSONObject jsonResponse = new JSONObject(response.toString());
-                        JSONArray courses = jsonResponse.getJSONArray("elements");
-
-                        // Pour chaque cours dans la réponse
-                        for (int i = 0; i < courses.length(); i++) {
-                            JSONObject course = courses.getJSONObject(i);
-                            String title = course.getString("name");
-                            String link = "https://www.coursera.org/learn/" + course.getString("slug");
-                            String imageUrl = course.optString("photoUrl", "");
-
-                            Course newCourse = new Course(title, link, imageUrl);
-                            courseList.add(newCourse);
-                        }
-                    }
+                    fetchCourseFromApi(urlString);
                 }
 
-                // Mise à jour du RecyclerView après avoir récupéré toutes les données
+                // Once data is retrieved, update UI
                 handler.post(() -> {
-                    filteredCourseList.addAll(courseList);  // Afficher tous les cours au départ
+                    filteredCourseList.addAll(courseList); // Display all courses initially
                     formationAdapter.notifyDataSetChanged();
-                    Toast.makeText(FormationActivity.this, "Cours récupérés avec succès!", Toast.LENGTH_SHORT).show();
-
-                    // Cacher le ProgressBar après la récupération des données
-                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormationActivity.this, "Courses retrieved successfully", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE); // Hide ProgressBar after data is fetched
                 });
 
             } catch (Exception e) {
+                // Handle errors
                 handler.post(() -> {
-                    Toast.makeText(FormationActivity.this, "Erreur lors de la récupération des données.", Toast.LENGTH_SHORT).show();
-
-                    // Cacher le ProgressBar en cas d'erreur
-                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FormationActivity.this, "Error retrieving data", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);  // Hide ProgressBar if error occurs
                 });
             }
         });
     }
 
+    private void fetchCourseFromApi(String urlString) throws Exception {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Accept", "application/json");
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            // Parse the JSON response
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray courses = jsonResponse.getJSONArray("elements");
+
+            // Loop through each course and add it to the list
+            for (int i = 0; i < courses.length(); i++) {
+                JSONObject course = courses.getJSONObject(i);
+                String title = course.getString("name");
+                String link = "https://www.coursera.org/learn/" + course.getString("slug");
+                String imageUrl = course.optString("photoUrl", "");
+
+                Course newCourse = new Course(title, link, imageUrl);
+                courseList.add(newCourse);
+            }
+        }
+    }
+
     private void filterCourses(String query) {
         filteredCourseList.clear();
         if (query.isEmpty()) {
-            filteredCourseList.addAll(courseList); // Si la recherche est vide, afficher tous les cours
+            filteredCourseList.addAll(courseList);  // If search is empty, show all courses
         } else {
             for (Course course : courseList) {
                 if (course.getTitle().toLowerCase().contains(query.toLowerCase())) {
@@ -160,6 +158,6 @@ public class FormationActivity extends AppCompatActivity {
                 }
             }
         }
-        formationAdapter.notifyDataSetChanged();
+        formationAdapter.notifyDataSetChanged();  // Notify adapter of changes
     }
 }

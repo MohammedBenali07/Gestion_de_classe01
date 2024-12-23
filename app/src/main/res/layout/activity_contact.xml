@@ -88,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="20dp"
         android:orientation="horizontal">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_files_button"
@@ -96,7 +96,6 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_button_yellow"
             android:text="Add files"
-            android:layout_marginBottom="7dp"
             android:paddingVertical="10dp"
             android:paddingHorizontal="15dp"
             android:layout_marginEnd="15dp"
@@ -111,7 +110,6 @@
                 android:background="@drawable/background_button_blue"
                 android:text="Send"
                 android:textSize="18dp"
-                android:layout_marginBottom="7dp"
                 android:paddingVertical="10dp"
                 android:paddingHorizontal="25dp"
                 android:drawableStart="@drawable/ic_paperplane"

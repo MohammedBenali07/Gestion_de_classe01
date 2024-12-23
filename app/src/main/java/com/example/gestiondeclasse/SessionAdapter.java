@@ -33,63 +33,32 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Définir le texte de session_numer
         holder.sessionNumberTextView.setText("Session " + (position + 1));
-
-        // Définir uniquement le texte de la session à partir de la liste
         String session = sessions.get(position);
-        holder.sessionTextView.setText(session); // Affiche uniquement la donnée de sessions
-
-        // Définir le texte de présence
+        holder.sessionTextView.setText(session);
         String pres = presence.get(position);
         holder.presenceTextView.setText(pres);
 
-        // Couleur aléatoire pour indiquer la présence ou l'absence
-        if (random.nextBoolean()) {
-            holder.sessionTextView.setBackgroundColor(android.graphics.Color.RED);
-            holder.presenceTextView.setText("Absent");
-        } else {
-            holder.sessionTextView.setBackgroundColor(android.graphics.Color.GREEN);
-            holder.presenceTextView.setText("Present");
-        }
+        boolean isPresent = random.nextBoolean();
+        holder.sessionTextView.setBackgroundColor(isPresent ? android.graphics.Color.GREEN : android.graphics.Color.RED);
+        holder.presenceTextView.setText(isPresent ? "Present" : "Absent");
 
-        // Gestion du clic sur un élément
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup(session, pres); // Passez les données au dialogue
-            }
-        });
+        holder.itemView.setOnClickListener(v -> showPopup(session, holder.presenceTextView.getText().toString()));
     }
 
     private void showPopup(String session, String presence) {
-        // Créer un AlertDialog.Builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        // Charger le layout personnalisé
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.popup_layout, null);
-
-        // Ajouter l'arrière-plan personnalisé au conteneur racine
-        dialogView.setBackgroundResource(R.drawable.background_card_white); // Background personnalisé
-
-        // Ajouter les données dynamiquement dans le layout
+        dialogView.setBackgroundResource(R.drawable.background_card_white);
         TextView cancel = dialogView.findViewById(R.id.btn_cancel);
 
-        // Créer et afficher le dialogue
         AlertDialog dialog = builder.create();
         dialog.setView(dialogView);
         dialog.show();
 
-        // Gestion du bouton "Fermer"
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss(); // Fermer le dialogue
-            }
-        });
+        cancel.setOnClickListener(v -> dialog.dismiss());
     }
-
 
     @Override
     public int getItemCount() {
@@ -109,3 +78,4 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         }
     }
 }
+
