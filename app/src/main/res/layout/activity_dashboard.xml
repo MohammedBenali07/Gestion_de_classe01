@@ -172,6 +172,7 @@
                 app:layout_constraintLeft_toRightOf="@id/pourcentage_career"
                 android:textSize="18sp"/>
             <TextView
+                android:id="@+id/id_career"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Web developer"
@@ -179,7 +180,7 @@
                 android:textColor="@color/black"
                 android:layout_marginTop="-6dp"
                 app:layout_constraintLeft_toRightOf="@id/pourcentage_career"
-                android:textSize="24sp"/>
+                android:textSize="20sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class SignUpActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private Spinner spinner_status, spinner_career;
-    private EditText editTextName, editTextSurname, editTextEmail, editTextPassword, birthdayInput;
+    private EditText editTextName, editTextSurname, editTextEmail, editTextPassword, birthdayInput, addressInput;
     private Button buttonSignUp, profileImgInput;
     private TextView textError;
     private ImageView profileImageView;
@@ -42,7 +42,7 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Initialize views
+        // Initialiser les vues
         editTextName = findViewById(R.id.nameInput);
         editTextSurname = findViewById(R.id.surnameInput);
         editTextEmail = findViewById(R.id.emailInput);
@@ -54,11 +54,12 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         spinner_career = findViewById(R.id.career_spinner);
         textError = findViewById(R.id.text_error);
         profileImageView = findViewById(R.id.profileImageView);
+        addressInput = findViewById(R.id.addressInput);
 
-        // Initialize the database through the singleton
+        // Initialiser la base de données à travers le singleton
         databaseHelper = DatabaseHelper.getInstance(this);
 
-        // Set up adapters for Spinners
+        // Configurer les adaptateurs pour les Spinners
         ArrayAdapter<CharSequence> statusAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.status_spinner,
@@ -110,17 +111,27 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         birthday = birthdayInput.getText().toString().trim();
+        String address = addressInput.getText().toString().trim();
 
         textError.setText("");
 
-        if (name.isEmpty() || surname.isEmpty() || email.isEmpty() || password.isEmpty() || birthday.isEmpty() || selectedStatus == null || selectedCareer == null) {
-            textError.setText("All fields are required");
+        // Vérifier si tous les champs sont remplis
+        if (name.isEmpty() || surname.isEmpty() || email.isEmpty() || password.isEmpty() || birthday.isEmpty() || address.isEmpty() || selectedStatus == null || selectedCareer == null) {
+            textError.setText("**All fields are required**");
             textError.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
             return;
         }
 
+        // Vérifier si l'email est valide
         if (!isValidEmail(email)) {
-            textError.setText("Invalid email address");
+            textError.setText("**Invalid email address**");
+            textError.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            return;
+        }
+
+        // Vérifier la validité de l'adresse
+        if (!isValidAddress(address)) {
+            textError.setText("**Invalid address**");
             textError.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
             return;
         }
@@ -130,10 +141,14 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
             profileImageByteArray = convertBitmapToByteArray(profileImageBitmap);
         }
 
-        long userId = databaseHelper.addUser(name, surname, email, password, selectedStatus, selectedCareer, birthday, profileImageByteArray);
+        // Ajouter l'utilisateur à la base de données
+        long userId = databaseHelper.addUser(name, surname, email, password, selectedStatus, selectedCareer, birthday, profileImageByteArray, address);
 
         if (userId != -1) {
             Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
+            if (profileImageByteArray != null) {
+                Toast.makeText(this, "Profile image saved!", Toast.LENGTH_SHORT).show();
+            }
             finish();
         } else {
             textError.setText("Registration failed");
@@ -141,9 +156,16 @@ public class SignUpActivity extends AppCompatActivity implements AdapterView.OnI
         }
     }
 
+    // Méthode pour valider l'email
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return Pattern.compile(emailRegex).matcher(email).matches();
+    }
+
+    // Méthode pour valider l'adresse
+    private boolean isValidAddress(String address) {
+        // Exemple simple de validation : vérifier que l'adresse a au moins 5 caractères
+        return address.length() >= 5;
     }
 
     private void openDatePicker() {

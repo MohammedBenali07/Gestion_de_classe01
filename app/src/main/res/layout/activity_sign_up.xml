@@ -254,13 +254,43 @@
                     android:hint="birthday"/>
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/id_imageProfile"
+                android:id="@+id/id_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginHorizontal="36dp"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@+id/id_birthday">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:fontFamily="@font/inter_28pt_extrabold"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"/>
+                <EditText
+                    android:id="@+id/addressInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:inputType="text"
+                    android:background="@drawable/background_inputs"
+                    android:paddingVertical="12dp"
+                    android:paddingHorizontal="14dp"
+                    android:layout_marginTop="12dp"
+                    android:hint="Andalus,Oujda"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/ic_address"
+                    android:textColorHint="@color/hint_inputs"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/id_imageProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="36dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/id_address">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -367,7 +397,7 @@
                 android:layout_marginTop="-5dp"
                 android:text=""
                 android:textColor="#ff0000"
-                android:textSize="12dp"
+                android:textSize="14dp"
                 android:fontFamily="@font/inter_28pt_light"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

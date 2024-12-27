@@ -77,7 +77,7 @@ public class ContactActivity extends AppCompatActivity {
                 emailIntent.setType("message/rfc822"); // Type pour les emails
 
                 // Remplir les champs avec le sujet, message et email de destination
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mohammed07.benali00@gmail.com"});  // Remplacer recipient@example.com par l'email réel
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mohammed07.benali00@gmail.com"});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                 emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 

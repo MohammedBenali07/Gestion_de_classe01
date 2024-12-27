@@ -20,7 +20,7 @@ public class CoursesActivity extends AppCompatActivity {
     private RecyclerView recyclerViewCourses;
     private Spinner levelSpinner, semestreSpinner;
     private CourseAdapter adapter;
-    private ArrayList<String> courses, allCourses;
+    private ArrayList<CourseAcadymic> courses, allCourses;
     private EditText inputSearch;
 
     @Override
@@ -65,13 +65,10 @@ public class CoursesActivity extends AppCompatActivity {
 
         // Configuration du bouton retour
         ImageView iconBack = findViewById(R.id.icon_back);
-        iconBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Rediriger vers DashboardActivity
-                Intent intent = new Intent(CoursesActivity.this, DashboardActivity.class);
-                startActivity(intent);
-            }
+        iconBack.setOnClickListener(v -> {
+            // Rediriger vers DashboardActivity
+            Intent intent = new Intent(CoursesActivity.this, DashboardActivity.class);
+            startActivity(intent);
         });
 
         // Ajouter un TextWatcher pour filtrer les cours lors de la saisie dans le champ de recherche
@@ -91,18 +88,51 @@ public class CoursesActivity extends AppCompatActivity {
     }
 
     /**
-     * Retourne une liste fictive de cours.
+     * Retourne une liste fictive de cours de type CourseAcadymic.
      */
-    private ArrayList<String> getCourses() {
-        ArrayList<String> courses = new ArrayList<>();
-        courses.add("Mathématiques");
-        courses.add("Physique");
-        courses.add("Programmation");
-        courses.add("Base de données");
-        courses.add("Réseaux");
-        courses.add("Design UI/UX");
-        courses.add("Développement Mobile");
-        courses.add("Intelligence Artificielle");
+    private ArrayList<CourseAcadymic> getCourses() {
+        ArrayList<CourseAcadymic> courses = new ArrayList<>();
+
+        // Liste des compétences associées à chaque cours
+        ArrayList<String> J22Skills = new ArrayList<>();
+        J22Skills.add("Java");
+        J22Skills.add("Oracle");
+        J22Skills.add("DevWeb");
+        J22Skills.add("Html");
+        J22Skills.add("Css");
+        J22Skills.add("figma");
+
+        ArrayList<String> AndroidSkills = new ArrayList<>();
+        AndroidSkills.add("Java");
+        AndroidSkills.add("Firebase");
+        AndroidSkills.add("Sqlite");
+        AndroidSkills.add("Xml");
+        AndroidSkills.add("Figma");
+        AndroidSkills.add("Kotlin");
+        AndroidSkills.add("Android");
+
+        ArrayList<String> PythonSkills = new ArrayList<>();
+        PythonSkills.add("Python");
+        PythonSkills.add("Django");
+        PythonSkills.add("Flask");
+        PythonSkills.add("Data Science");
+        PythonSkills.add("Numpy");
+        PythonSkills.add("Pandas");
+        ArrayList<String> DataScienceSkills = new ArrayList<>();
+        DataScienceSkills.add("Python");
+        DataScienceSkills.add("Machine Learning");
+        DataScienceSkills.add("Deep Learning");
+        DataScienceSkills.add("Data Analysis");
+        DataScienceSkills.add("TensorFlow");
+        DataScienceSkills.add("Pandas");
+        DataScienceSkills.add("Scikit-learn");
+
+        // Ajouter chaque cours avec ses informations
+        courses.add(new CourseAcadymic("JEE", "Berrich Mohammed", "https://drive.google.com/drive/folders/1BvBRmfdaDS0NLVYC6o29-jm8T0wX4Mzm", J22Skills));
+        courses.add(new CourseAcadymic("Dev Mobile", "Benouda Hanane", "https://drive.google.com/drive/folders/1qvYz4diMrWEwu2bYUNSVRrX22e_y2zUm", AndroidSkills));
+        courses.add(new CourseAcadymic("Introduction to Python", "Haja Zakaria", "https://drive.google.com/python", PythonSkills));
+        courses.add(new CourseAcadymic("Data Science", "Toumi Bouchentouf", "https://drive.google.com/datascience", DataScienceSkills));
+
         return courses;
     }
 }

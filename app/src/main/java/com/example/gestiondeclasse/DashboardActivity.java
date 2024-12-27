@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -11,14 +12,12 @@ import android.widget.TextView;
 import android.widget.ImageView;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +27,7 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView fullName;
     private RecyclerView top3RecyclerView;
     private TextView overallRanking;
+    private TextView career;
     private ProgressBar progressBar;
     private List<Student> students;
     private BottomNavigationView bottomNavigationView;
@@ -37,7 +37,7 @@ public class DashboardActivity extends AppCompatActivity {
     // Variables pour stocker les données utilisateur
     private int userId;
     private String userName, userEmail, userSurname, userBirtday;
-    private byte[] userImageProfile;
+    private String userImageProfile;  // Chemin du fichier d'image
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,31 +51,42 @@ public class DashboardActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         pourcentageProgress = findViewById(R.id.ProgressPercentage);
         fullName = findViewById(R.id.fullName);
-        imageProfile = findViewById(R.id.profileImageView);
+        imageProfile = findViewById(R.id.imgae_profile);
+        career = findViewById(R.id.id_career);
 
-        // Récupérer les données utilisateur transmises par Intent
-        Intent intent = getIntent();
-        userId = intent.getIntExtra("userId", -1);
-        userName = intent.getStringExtra("userName");
-        userSurname = intent.getStringExtra("userSurName");
-        userEmail = intent.getStringExtra("userEmail");
-        userBirtday = intent.getStringExtra("userBirthday");
-        userImageProfile = intent.getByteArrayExtra("userImageProfile");
+        // Récupérer les données utilisateur depuis SharedPreferences
+        SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
 
+        userId = sharedPref.getInt("userId", -1);
+        userName = sharedPref.getString("userName", "");
+        userSurname = sharedPref.getString("userSurName", "");
+        userEmail = sharedPref.getString("userEmail", "");
+        userBirtday = sharedPref.getString("userBirthday", "");
+        userImageProfile = sharedPref.getString("userProfileImagePath", null);  // Chemin du fichier image
         // Vérifier que les données sont valides et les afficher
         if (userName != null && userSurname != null) {
             fullName.setText(userName + " " + userSurname);
         }
+        career.setText(sharedPref.getString("userCareer", ""));
 
         // Afficher l'image de profil si disponible
-        if (userImageProfile != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(userImageProfile, 0, userImageProfile.length);
-            imageProfile.setImageBitmap(bitmap);
+        if (userImageProfile != null && !userImageProfile.isEmpty()) {
+            try {
+                // Charger l'image depuis le fichier local
+                File imgFile = new  File(userImageProfile);
+                if(imgFile.exists()){
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    imageProfile.setImageBitmap(bitmap);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Erreur de chargement de l'image", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            // Afficher un message Toast si l'image n'est pas disponible
+            // Afficher une image par défaut si l'image de profil n'est pas disponible
+            imageProfile.setImageResource(R.drawable.mon_image);
             Toast.makeText(getApplicationContext(), "Aucune image de profil disponible", Toast.LENGTH_SHORT).show();
         }
-
 
         // Simuler une liste d'étudiants
         students = new ArrayList<>();
@@ -137,9 +148,9 @@ public class DashboardActivity extends AppCompatActivity {
         super.onResume();
 
         // Récupérer à nouveau les données utilisateur dans le cas où l'activité a été redémarrée
-        Intent intent = getIntent();
-        userName = intent.getStringExtra("userName");
-        userSurname = intent.getStringExtra("userSurName");
+        SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
+        userName = sharedPref.getString("userName", "");
+        userSurname = sharedPref.getString("userSurName", "");
 
         // Vérifiez que les données sont récupérées correctement
         if (userName != null && userSurname != null) {
@@ -147,11 +158,20 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         // Vous pouvez également récupérer l'image de profil si elle est mise à jour
-        userImageProfile = intent.getByteArrayExtra("userImageProfile");
-        if (userImageProfile != null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(userImageProfile, 0, userImageProfile.length);
-            imageProfile.setImageBitmap(bitmap);
-            imageProfile.invalidate();  // Force le redessin de l'ImageView
+        userImageProfile = sharedPref.getString("userProfileImagePath", null);
+        if (userImageProfile != null && !userImageProfile.isEmpty()) {
+            try {
+                // Charger l'image depuis le fichier local
+                File imgFile = new  File(userImageProfile);
+                if(imgFile.exists()){
+                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    imageProfile.setImageBitmap(bitmap);
+                    imageProfile.invalidate();  // Force le redessin de l'ImageView
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Erreur de chargement de l'image", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -190,12 +210,14 @@ public class DashboardActivity extends AppCompatActivity {
     // Méthode pour inclure les données utilisateur dans l'Intent
     private void redirectToActivity(Class<?> targetActivity) {
         Intent intent = new Intent(DashboardActivity.this, targetActivity);
-        intent.putExtra("userId", userId);
-        intent.putExtra("userName", userName);
-        intent.putExtra("userSurName", userSurname);
-        intent.putExtra("userEmail", userEmail);
-        intent.putExtra("userBirthday", userBirtday);
-        intent.putExtra("userImageProfile", userImageProfile); // Si nécessaire
+        // Récupérer les données directement depuis SharedPreferences pour éviter de les passer via Intent
+        SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
+        intent.putExtra("userId", sharedPref.getInt("userId", -1));
+        intent.putExtra("userName", sharedPref.getString("userName", ""));
+        intent.putExtra("userSurName", sharedPref.getString("userSurName", ""));
+        intent.putExtra("userEmail", sharedPref.getString("userEmail", ""));
+        intent.putExtra("userBirthday", sharedPref.getString("userBirthday", ""));
+        intent.putExtra("userProfileImagePath", sharedPref.getString("userProfileImagePath", null)); // Chemin de l'image si nécessaire
         startActivity(intent);
     }
 }

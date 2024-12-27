@@ -1,7 +1,5 @@
 package com.example.gestiondeclasse;
 
-import java.util.Arrays;
-
 public class User {
     private int id;
     private String name;
@@ -10,11 +8,14 @@ public class User {
     private String password;
     private String status;
     private String career;
-    private byte[] profileImage; // Colonne pour l'image de profil
-    private String birthday;     // Nouvelle colonne pour la date d'anniversaire
+    private byte[] profileImage;
+    private String birthday;
+    private String address;
 
-    // Constructeur avec tous les paramètres
-    public User(int id, String name, String surname, String email, String password, String status, String career, byte[] profileImage, String birthday) {
+    // Constructeur
+    public User(int id, String name, String surname, String email, String password,
+                String status, String career, byte[] profileImage,
+                String birthday, String address) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -24,16 +25,7 @@ public class User {
         this.career = career;
         this.profileImage = profileImage;
         this.birthday = birthday;
-    }
-
-    // Constructeur sans l'image de profil (optionnel)
-    public User(int id, String name, String surname, String email, String password, String status, String career, String birthday) {
-        this(id, name, surname, email, password, status, career, null, birthday);
-    }
-
-    // Constructeur minimaliste
-    public User(int id, String name, String surname, String email, String password) {
-        this(id, name, surname, email, password, null, null, null, null);
+        this.address = address;
     }
 
     // Getters et Setters
@@ -109,6 +101,14 @@ public class User {
         this.birthday = birthday;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -116,11 +116,10 @@ public class User {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", status='" + status + '\'' +
                 ", career='" + career + '\'' +
-                ", profileImage=" + Arrays.toString(profileImage) +
                 ", birthday='" + birthday + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

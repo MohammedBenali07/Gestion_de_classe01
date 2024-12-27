@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
+    implementation ("org.jsoup:jsoup:1.15.4")
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation ("com.google.android.material:material:1.9.0")

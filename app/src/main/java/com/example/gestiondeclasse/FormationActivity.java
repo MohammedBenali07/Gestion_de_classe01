@@ -1,11 +1,14 @@
 package com.example.gestiondeclasse;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,8 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -34,6 +42,8 @@ public class FormationActivity extends AppCompatActivity {
     private ArrayList<Course> courseList = new ArrayList<>();
     private ArrayList<Course> filteredCourseList = new ArrayList<>();
     private ProgressBar progressBar;
+    private int userId;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +52,15 @@ public class FormationActivity extends AppCompatActivity {
 
         // Initializing views
         recyclerView = findViewById(R.id.recyclerView);
-        progressBar = findViewById(R.id.progressBar);  // Getting reference to the ProgressBar
+        progressBar = findViewById(R.id.progressBar);
+
+        // Initializing DatabaseHelper
+        dbHelper = new DatabaseHelper(this);
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         formationAdapter = new FormationAdapter(filteredCourseList);
         recyclerView.setAdapter(formationAdapter);
-
-        // Fetch courses from the API
-        fetchCourseData();
 
         // Setup Back button functionality
         ImageView iconBack = findViewById(R.id.icon_back);
@@ -59,6 +69,34 @@ public class FormationActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Retrieve userId from shared preferences
+        SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
+        userId = sharedPref.getInt("userId", -1);
+
+// Fetch courses based on user skills
+        // Fetch courses based on user skills
+        Cursor cursor = dbHelper.getSkillsByUser(userId);
+        if (cursor != null) {
+            // Get the index of the column where skills are stored
+            int skillColumnIndex = cursor.getColumnIndex(dbHelper.getSkillNameColumn());
+
+            // Check if the column exists (the index should be >= 0)
+            if (skillColumnIndex >= 0) {
+                // Iterate through the skills found in the cursor
+                while (cursor.moveToNext()) {
+                    String skill = cursor.getString(skillColumnIndex);  // Fetch the skill based on valid column index
+                    fetchCoursesFromWeb(skill);  // Fetch courses based on skill
+                }
+            } else {
+                // Handle the case where the column index is invalid (column not found)
+                Log.e("FormationActivity", "Skill column not found in the cursor.");
+            }
+            cursor.close();
+        }
+
+        // Modify if needed based on skills from cursor
+        // Fetch courses via API
+        fetchCourseData();
         // Implement search functionality
         EditText searchInput = findViewById(R.id.search_formation);
         searchInput.addTextChangedListener(new TextWatcher() {
@@ -97,7 +135,7 @@ public class FormationActivity extends AppCompatActivity {
 
                 // Once data is retrieved, update UI
                 handler.post(() -> {
-                    filteredCourseList.addAll(courseList); // Display all courses initially
+                    filteredCourseList.addAll(courseList);  // Display all courses initially
                     formationAdapter.notifyDataSetChanged();
                     Toast.makeText(FormationActivity.this, "Courses retrieved successfully", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE); // Hide ProgressBar after data is fetched
@@ -147,10 +185,89 @@ public class FormationActivity extends AppCompatActivity {
         }
     }
 
+    private void scrapeCoursera(String url) throws IOException {
+        // Afficher dans le log que le scraping commence
+        Log.d("Scraping", "Scraping started for URL: " + url);
+
+        Document document = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                .get();
+
+        // Vérifier si le document est bien récupéré
+        if (document != null) {
+            Log.d("Scraping", "Document fetched successfully");
+
+            // Récupération des éléments contenant les informations sur les cours
+            Elements courses = document.select(".css-2fumar");
+
+            Log.d("Scraping", "Courses found: " + courses.size());
+            if (courses.isEmpty()) {
+                Log.d("Scraping", "No courses found with the selector '.ais-InfiniteHits-item'. Trying another selector.");
+                courses = document.select("li"); // Essayons un autre sélecteur pour trouver les cours
+                Log.d("Scraping", "Courses found with 'li' selector: " + courses.size());
+            }
+
+            for (Element courseElement : courses) {
+                String title = courseElement.select(".cds-CommonCard-title.css-6ecy9b").text();
+                String link = "https://www.coursera.org" + courseElement.select("a").attr("href");
+                String imageUrl = courseElement.select("img").attr("src");
+
+                // Ajouter des logs pour chaque élément
+                Log.d("CourseScraping", "Title: " + title);
+                Log.d("CourseScraping", "Link: " + link);
+                Log.d("CourseScraping", "Image URL: " + imageUrl);
+
+                // Vérifier si les données récupérées ne sont pas vides
+                if (!title.isEmpty() && !link.isEmpty() && !imageUrl.isEmpty()) {
+                    // Créer un objet Course
+                    Course newCourse = new Course(title, link, imageUrl);
+                    courseList.add(newCourse);
+                } else {
+                    Log.d("Scraping", "Incomplete course data found. Skipping this course.");
+                }
+            }
+        } else {
+            Log.d("Scraping", "Document is null or error fetching.");
+        }
+    }
+
+    private void fetchCoursesFromWeb(final String query) {
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Démarrer une tâche dans un autre thread pour effectuer le scraping
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String courseraUrl = "https://www.coursera.org/courses?query=" + query;
+                    scrapeCoursera(courseraUrl);
+
+                    // Mettre à jour l'UI après avoir récupéré les données
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            formationAdapter.notifyDataSetChanged();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(FormationActivity.this, "Error scraping data", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
     private void filterCourses(String query) {
         filteredCourseList.clear();
         if (query.isEmpty()) {
-            filteredCourseList.addAll(courseList);  // If search is empty, show all courses
+            filteredCourseList.addAll(courseList);
         } else {
             for (Course course : courseList) {
                 if (course.getTitle().toLowerCase().contains(query.toLowerCase())) {
@@ -158,6 +275,6 @@ public class FormationActivity extends AppCompatActivity {
                 }
             }
         }
-        formationAdapter.notifyDataSetChanged();  // Notify adapter of changes
+        formationAdapter.notifyDataSetChanged();
     }
 }

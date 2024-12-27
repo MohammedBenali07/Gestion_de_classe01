@@ -35,10 +35,10 @@ public class Fragment1 extends Fragment {
 
         // Get the data passed via arguments
         if (getArguments() != null) {
-            email = getArguments().getString("userEmail");
-            birthday = getArguments().getString("userBirthday");
+            email = getArguments().getString("email");
+            birthday = getArguments().getString("birthday");
             // Assuming address is passed along as well (if needed)
-            address = getArguments().getString("userAddress", "Address not provided");
+            address = getArguments().getString("Address", "Oujda");
         }
 
         // Initialize the TextViews for displaying the information

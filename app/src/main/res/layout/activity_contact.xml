@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Contact Teacher"
+            android:text="Contact"
             android:textSize="28sp"
             android:fontFamily="@font/inter_28pt_extrabold"
             android:textColor="@color/black"
@@ -88,7 +88,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
+            android:paddingBottom="5dp"
         android:orientation="horizontal">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_files_button"
