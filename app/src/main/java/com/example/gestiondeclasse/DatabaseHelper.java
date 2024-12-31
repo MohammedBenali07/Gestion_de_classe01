@@ -13,10 +13,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
     private static final String DATABASE_NAME = "studentDatabase";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String TABLE_USERS = "users";
     private static final String TABLE_SKILLS = "skills";
+    private static final String TABLE_COURSES = "courses";
+    private static final String TABLE_COURSES_SKILLS = "coursesSkills";
 
     // Colonnes des utilisateurs
     private static final String COLUMN_ID = "id";
@@ -34,6 +36,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_SKILL_NAME = "skill_name";
     private static final String COLUMN_USER_ID = "user_id";
     private static final String COLUMN_PROGRESS = "progress";
+    // Colonnes des cours
+    private static final String COLUMN_COURSE_ID = "course_id";
+    private static final String COLUMN_COURSE_NAME = "course_name";
+    private static final String COLUMN_Teacher_NAME = "teacher_name";
+    private static final String COLUMN_LINK_DRIVE = "link_drive";
+
+    // Colonnes de la table coursesSkills
+    private static final String COLUMN_CS_ID = "cs_id";
+    private static final String COLUMN_COURSESKILLS_ID = "courseskills_id";
+    private static final String COLUMN_CS_NAME = "cs_name";
 
     // Méthode Singleton pour une meilleure gestion
     public static synchronized DatabaseHelper getInstance(Context context) {
@@ -70,12 +82,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_PROGRESS + " INTEGER DEFAULT 0, " +
                 "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "))";
         db.execSQL(CREATE_SKILLS_TABLE);
+        // Table Courses
+        String CREATE_COURSES_TABLE = "CREATE TABLE " + TABLE_COURSES + " (" +
+                COLUMN_COURSE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_COURSE_NAME + " TEXT, " +
+                COLUMN_Teacher_NAME + " TEXT, " +
+                COLUMN_LINK_DRIVE + " TEXT)";
+        db.execSQL(CREATE_COURSES_TABLE);
+
+        // Table CoursesSkills
+        String CREATE_COURSES_SKILLS_TABLE = "CREATE TABLE " + TABLE_COURSES_SKILLS + " (" +
+                COLUMN_CS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_COURSE_ID + " INTEGER, " +
+                "FOREIGN KEY(" + COLUMN_COURSE_ID + ") REFERENCES " + TABLE_COURSES + "(" + COLUMN_COURSE_ID + "))";
+        db.execSQL(CREATE_COURSES_SKILLS_TABLE);
+        // Ajouter les valeurs par défaut dans la table Courses
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_COURSE_NAME, "JEE");
+        values.put(COLUMN_Teacher_NAME, "Berrich Mohammed");
+        values.put(COLUMN_LINK_DRIVE, "https://drive.google.com/drive/folders/1BvBRmfdaDS0NLVYC6o29-jm8T0wX4Mzm");
+        long courseId1 = db.insert(TABLE_COURSES, null, values);
+
+        values.put(COLUMN_COURSE_NAME, "Dev Mobile");
+        values.put(COLUMN_Teacher_NAME, "Benouda Hanane");
+        values.put(COLUMN_LINK_DRIVE, "https://drive.google.com/drive/folders/1qvYz4diMrWEwu2bYUNSVRrX22e_y2zUm");
+        long courseId2 = db.insert(TABLE_COURSES, null, values);
+
+        values.put(COLUMN_COURSE_NAME, "Introduction to Python");
+        values.put(COLUMN_Teacher_NAME, "Haja Zakaria");
+        values.put(COLUMN_LINK_DRIVE, "https://drive.google.com/python");
+        long courseId3 = db.insert(TABLE_COURSES, null, values);
+
+        values.put(COLUMN_COURSE_NAME, "Data Science");
+        values.put(COLUMN_Teacher_NAME, "Toumi Bouchentouf");
+        values.put(COLUMN_LINK_DRIVE, "https://drive.google.com/datascience");
+        long courseId4 = db.insert(TABLE_COURSES, null, values);
+
+        // Ajouter les compétences associées dans la table CoursesSkills
+        insertCourseSkills(db, courseId1, new String[]{"Java", "Oracle", "DevWeb", "Html", "Css", "figma"});
+        insertCourseSkills(db, courseId2, new String[]{"Java", "Firebase", "Sqlite", "Xml", "Figma", "Kotlin", "Android"});
+        insertCourseSkills(db, courseId3, new String[]{"Python", "Django", "Flask", "Data Science", "Numpy", "Pandas"});
+        insertCourseSkills(db, courseId4, new String[]{"Python", "Machine Learning", "Deep Learning", "Data Analysis", "TensorFlow", "Pandas", "Scikit-learn"});
+    }
+    private void insertCourseSkills(SQLiteDatabase db, long courseId, String[] skills) {
+        ContentValues values = new ContentValues();
+        for (String skill : skills) {
+            // Inserer une compétence pour chaque cours
+            values.put(COLUMN_COURSE_ID, courseId);
+            values.put(COLUMN_SKILL_NAME, skill);  // Assurez-vous de traiter ces compétences dans la table skills au préalable
+            db.insert(TABLE_COURSES_SKILLS, null, values);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_ADDRESS + " TEXT");
+        if (oldVersion < 3) {
+            // Mise à jour vers la version 3 : Ajout des nouvelles tables (si elles n'existent pas déjà)
+            String CREATE_COURSES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COURSES + " (" +
+                    COLUMN_COURSE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_COURSE_NAME + " TEXT, " +
+                    COLUMN_Teacher_NAME + " TEXT, " +
+                    COLUMN_LINK_DRIVE + " TEXT)";
+            db.execSQL(CREATE_COURSES_TABLE);
+
+            String CREATE_COURSES_SKILLS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COURSES_SKILLS + " (" +
+                    COLUMN_CS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_COURSE_ID + " INTEGER, " +
+                    "FOREIGN KEY(" + COLUMN_COURSE_ID + ") REFERENCES " + TABLE_COURSES + "(" + COLUMN_COURSE_ID + "))";
+            db.execSQL(CREATE_COURSES_SKILLS_TABLE);
         }
     }
 
@@ -114,6 +189,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return -1;
         }
     }
+    // Méthode pour mettre à jour les détails de l'utilisateur
+    public boolean updateUserDetails(int userId, String email, String birthday, String address) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_BIRTHDAY, birthday);
+        values.put(COLUMN_ADDRESS, address);
+
+        try {
+            int rowsAffected = db.update(TABLE_USERS, values, COLUMN_ID + " = ?", new String[]{String.valueOf(userId)});
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            Log.e("DatabaseError", "Erreur lors de la mise à jour des détails de l'utilisateur : " + e.getMessage());
+            return false;
+        }
+    }
+
+
 
     // Ajouter une compétence
     public long addSkill(int userId, String skillName, int progress) {

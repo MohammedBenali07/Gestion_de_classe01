@@ -1,24 +1,27 @@
 package com.example.gestiondeclasse;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 
 public class ContactActivity extends AppCompatActivity {
 
     private Spinner contactSpinner;
     private EditText subjectEditText, messageEditText;
-    private AppCompatButton addFilesButton, sendButton;
-    private Uri fileUri;  // URI du fichier sélectionné
+    private Button addFilesButton, sendButton;
+
+    private Uri selectedFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,6 @@ public class ContactActivity extends AppCompatActivity {
         messageEditText = findViewById(R.id.edit_message);
         addFilesButton = findViewById(R.id.add_files_button);
         sendButton = findViewById(R.id.send_button);
-
         // Configurer le Spinner
         SpinnerUtils.setupSpinner(
                 this,
@@ -47,75 +49,100 @@ public class ContactActivity extends AppCompatActivity {
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
-                        // Aucune action nécessaire si rien n'est sélectionné
+
                     }
                 }
         );
 
-        // Pré-sélectionner une personne par défaut dans le Spinner
-        contactSpinner.setSelection(0); // Change l'index si nécessaire, ici c'est l'index 0 (premier élément)
+        addFilesButton.setOnClickListener(v -> openFileChooser());
 
-        // Ajouter un écouteur pour le bouton "Add files"
-        addFilesButton.setOnClickListener(v -> {
-            // Ouvrir le sélecteur de fichiers
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");  // Permet de choisir tous types de fichiers
-            startActivityForResult(intent, 1);  // 1 est un code de requête arbitraire
-        });
-
-        // Ajouter un écouteur pour le bouton "Send"
         sendButton.setOnClickListener(v -> {
             String subject = subjectEditText.getText().toString().trim();
             String message = messageEditText.getText().toString().trim();
-            String selectedTeacher = contactSpinner.getSelectedItem().toString();
 
             if (subject.isEmpty() || message.isEmpty()) {
                 Toast.makeText(ContactActivity.this, "Please fill in all fields!", Toast.LENGTH_SHORT).show();
             } else {
-                // Créer un Intent pour envoyer un e-mail sans choisir de client email
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setType("message/rfc822"); // Type pour les emails
+                // Adresse email et mot de passe Gmail
+                final String senderEmail = "";
+                final String senderPassword = "";
 
-                // Remplir les champs avec le sujet, message et email de destination
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mohammed07.benali00@gmail.com"});
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+                final String recipientEmail = contactSpinner.getSelectedItem().toString();;
 
-                // Joindre un fichier si sélectionné
-                if (fileUri != null) {
-                    emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                }
+                new Thread(() -> {
+                    try {
+                        String filePath = null;
+                        if (selectedFileUri != null) {
+                            filePath = FileUtil.getPath(ContactActivity.this, selectedFileUri);
+                        }
 
-                // Vérifier si il existe des applications pouvant gérer l'email
-                try {
-                    startActivity(Intent.createChooser(emailIntent, "Send email via"));
-                } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(ContactActivity.this, "No email clients found.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // Configuration du bouton retour
-        ImageView iconBack = findViewById(R.id.icon_back); // Déplacement ici dans onCreate
-        iconBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Rediriger vers DashboardActivity
-                Intent intent = new Intent(ContactActivity.this, DashboardActivity.class);
-                startActivity(intent);
+                        EmailSender.sendEmail(senderEmail, senderPassword, recipientEmail, subject, message, filePath);
+                        runOnUiThread(() ->
+                                Toast.makeText(ContactActivity.this, "Email sent successfully!", Toast.LENGTH_SHORT).show()
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        runOnUiThread(() ->
+                                Toast.makeText(ContactActivity.this, "Failed to send email.", Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                }).start();
             }
         });
     }
 
-    // Méthode qui capture le résultat du sélecteur de fichiers
+    private void openFileChooser() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*"); // Permet de choisir n'importe quel type de fichier
+        startActivityForResult(intent, 1);
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data != null) {
-                fileUri = data.getData();  // Récupérer l'URI du fichier sélectionné
-                Toast.makeText(ContactActivity.this, "File selected: " + fileUri, Toast.LENGTH_SHORT).show();
-            }
+
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedFileUri = data.getData();
+
+            // Afficher le nom du fichier sélectionné dans un Toast
+            String fileName = getFileName(selectedFileUri);
+            Toast.makeText(this, "File selected: " + fileName, Toast.LENGTH_SHORT).show();
         }
     }
+
+    // Récupère le nom du fichier sélectionné
+    private String getFileName(Uri uri) {
+        String fileName = null;
+
+        // Vérifier si l'URI utilise le schéma "content"
+        if ("content".equals(uri.getScheme())) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (displayNameIndex != -1) {
+                        fileName = cursor.getString(displayNameIndex); // Récupérer le nom du fichier
+                    } else {
+                        Log.e("getFileName", "Column 'DISPLAY_NAME' not found in cursor");
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("getFileName", "Error retrieving file name from content URI", e);
+            }
+        }
+
+        // Si aucune information via le curseur, récupérer le chemin brut
+        if (fileName == null) {
+            String path = uri.getPath();
+            if (path != null) {
+                int lastSeparator = path.lastIndexOf('/');
+                fileName = lastSeparator != -1 ? path.substring(lastSeparator + 1) : path;
+            } else {
+                Log.e("getFileName", "Failed to get file path from URI");
+                fileName = "unknown_file"; // Fallback
+            }
+        }
+
+        return fileName;
+    }
+
 }
