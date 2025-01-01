@@ -44,9 +44,9 @@
     <!-- Array pour les professuers -->
     <string-array name="Spinner_professeurs">
         <item>To:</item>
-        <item>mohammed.benali23@ump.ac.ma</item>
+        <item>y.colibaly@ump.ac.ma</item>
         <item>mohammed.benali23@gmail.com</item>
-        <item>mohammed.benali23@gmail.com</item>
+        <item>djiboridwanealhassane@gmail.com</item>
         <item>mohammed.benali23@gmail.com</item>
     </string-array>
     <!-- Strings used for fragments for navigation -->
